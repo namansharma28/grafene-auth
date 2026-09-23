@@ -155,14 +155,14 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub!;
-        session.user.role = token.role as string;
+        session.user.role = token.role || "user";
       }
       return session;
     },
     async jwt({ token, user, account }) {
       if (account && user) {
         token.id = user.id;
-        token.role = (user as any).role || "user";
+        token.role = user.role || "user";
       }
       return token;
     },
@@ -172,7 +172,7 @@ export const authOptions: NextAuthOptions = {
       // Support cross-subdomain redirect to allowed origins (e.g. *.grafene.in)
       try {
         const targetHost = new URL(url).hostname;
-        if (targetHost.endsWith(".grafene.in") || targetHost === "localhost") {
+        if (targetHost.endsWith(".grafene.in") || targetHost === "grafene.in" || targetHost === "localhost") {
           return url;
         }
       } catch (e) {

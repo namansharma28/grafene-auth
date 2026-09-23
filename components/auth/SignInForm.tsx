@@ -9,13 +9,19 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, EyeOff, AlertTriangle, CheckCircle, ArrowRight, Loader2 } from "lucide-react";
+import { DEFAULT_REDIRECT_URL } from "@/constants";
 
 export const SignInForm: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
 
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const rawCallback =
+    searchParams.get("callbackUrl") ||
+    searchParams.get("redirect_uri") ||
+    searchParams.get("redirect") ||
+    searchParams.get("ref");
+  const callbackUrl = rawCallback && rawCallback !== "/" ? rawCallback : DEFAULT_REDIRECT_URL;
   const verifiedParam = searchParams.get("verified");
 
   const [isLoading, setIsLoading] = useState(false);

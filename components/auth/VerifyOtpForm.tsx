@@ -13,6 +13,13 @@ export const VerifyOtpForm: React.FC = () => {
   const email = searchParams.get("email") || "";
   const type = searchParams.get("type") || "email_verification";
 
+  const rawCallback =
+    searchParams.get("callbackUrl") ||
+    searchParams.get("redirect_uri") ||
+    searchParams.get("redirect") ||
+    searchParams.get("ref");
+  const callbackUrl = rawCallback && rawCallback !== "/" ? rawCallback : "";
+
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -89,11 +96,12 @@ export const VerifyOtpForm: React.FC = () => {
       }
 
       setSuccessMessage("OTP verified successfully!");
+      const cbParam = callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : "";
       setTimeout(() => {
         if (type === "password_reset") {
-          router.push(`/auth/reset-password?email=${encodeURIComponent(email)}&otp=${fullOtp}`);
+          router.push(`/auth/reset-password?email=${encodeURIComponent(email)}&otp=${fullOtp}${cbParam}`);
         } else {
-          router.push("/auth/signin?verified=true");
+          router.push(`/auth/signin?verified=true${cbParam}`);
         }
       }, 1200);
     } catch (error) {

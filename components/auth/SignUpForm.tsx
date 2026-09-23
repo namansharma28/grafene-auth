@@ -9,11 +9,17 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Eye, EyeOff, AlertTriangle, Loader2 } from "lucide-react";
+import { DEFAULT_REDIRECT_URL } from "@/constants";
 
 export const SignUpForm: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const rawCallback =
+    searchParams.get("callbackUrl") ||
+    searchParams.get("redirect_uri") ||
+    searchParams.get("redirect") ||
+    searchParams.get("ref");
+  const callbackUrl = rawCallback && rawCallback !== "/" ? rawCallback : DEFAULT_REDIRECT_URL;
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -70,7 +76,7 @@ export const SignUpForm: React.FC = () => {
       }
 
       router.push(
-        `/auth/verify-otp?email=${encodeURIComponent(formData.email)}&type=email_verification`
+        `/auth/verify-otp?email=${encodeURIComponent(formData.email)}&type=email_verification&callbackUrl=${encodeURIComponent(callbackUrl)}`
       );
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");

@@ -40,7 +40,11 @@ export const SignInForm: React.FC = () => {
 
   useEffect(() => {
     if (status === "authenticated" && session) {
-      router.push(callbackUrl);
+      if (callbackUrl.startsWith("http://") || callbackUrl.startsWith("https://")) {
+        window.location.href = callbackUrl;
+      } else {
+        router.push(callbackUrl);
+      }
     }
   }, [status, session, callbackUrl, router]);
 
@@ -84,7 +88,11 @@ export const SignInForm: React.FC = () => {
       } else if (result?.ok) {
         setSuccessMessage("Welcome back! Redirecting...");
         setTimeout(() => {
-          router.push(callbackUrl);
+          if (callbackUrl.startsWith("http://") || callbackUrl.startsWith("https://")) {
+            window.location.href = callbackUrl;
+          } else {
+            router.push(callbackUrl);
+          }
         }, 800);
       }
     } catch (error) {
